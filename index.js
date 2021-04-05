@@ -21,13 +21,27 @@ const bot = new Bot();
             .textProcessor()
             .friendLock()
             .done(async ({ text, unlock, sender: { id: friend } }) => {
-                if (/^a$/i.test(text)) {
-                    const { imageId } = await bot.uploadImage({ img: await capture() });
+
+
+                try {
+                    if (/^a$/i.test(text)) {
+                        bot.sendMessage({
+                            friend,
+                            message: new Message().addText('正在截图...')
+                        });
+                        const { imageId } = await bot.uploadImage({ img: await capture() });
+                        bot.sendMessage({
+                            friend,
+                            message: new Message().addImageId(imageId)
+                        });
+                    }
+                } catch (error) {
                     bot.sendMessage({
                         friend,
-                        message: new Message().addImageId(imageId)
-                    })
+                        message: new Message().addText(error.message)
+                    });
+                } finally {
+                    unlock();
                 }
-                unlock();
             }));
 })();
