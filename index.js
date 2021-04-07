@@ -15,7 +15,14 @@ const bot = new Bot();
         qq,
     });
 
-    await bot.on('FriendMessage',
+
+    bot.on('close',
+        new Middleware()
+            .catch(console.log)
+            .autoReconnection(bot).done()
+    );
+
+    bot.on('FriendMessage',
         new Middleware()
             .friendFilter(friendArr)
             .textProcessor()
